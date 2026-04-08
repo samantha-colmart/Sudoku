@@ -1,32 +1,130 @@
+const main = document.getElementById("main");
+RecupEnquetes();
 
-const grille = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
-];
-
-
-for (let ligne = 0; ligne < 9; ligne++) {
-    for (let col = 0; col < 9; col++) {
-        const input = document.getElementById(`case${ligne}-${col}`);
-        const valeur = grille[ligne][col];
-
-        if (valeur !== 0) {
-            input.value = valeur;
-            input.disabled = true;
-            input.classList.add("fixe");
+// Fonction asynchrone pour récupérer les infos d'une enquête à partir de son numéro
+async function RecupEnqueteId(id) {
+    const url = "enquetes.json";
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
         }
-        input.addEventListener("input", verifierSudoku);
+
+        const enquetes = await response.json();
+        const enquete = enquetes[id-1];
+        return enquete;
+    } catch (error) {
+        console.error(error.message);
     }
 }
+
+// Fonction asynchrone pour récupérer une grille de sudoku à partir d'un appel API
+async function RecupSudoku() {
+    const url = "https://sudoku-api.vercel.app/api/dosuku";
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const sudoku = await response.json();
+        const grille = sudoku["newboard"]["grids"][0]["value"];
+        const solution = sudoku["newboard"]["grids"][0]["solution"];
+        return [grille, solution];
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+// Fonction asynchrone pour récupérer tous les scénarios d'enquêtes présents dans le fichier JSON puis les afficher
+async function RecupEnquetes() {
+    const url = "enquetes.json";
+
+    try {
+        const response = await fetch(url);
+        const enquetes = await response.json();
+        main.innerHTML = "";
+        enquetes.forEach(enquete => {
+            const classe = enquete.locked ? "level-card locked" : "level-card active";
+            const div = document.createElement("div");
+            div.className = classe;
+            div.dataset.id = enquete.num;
+
+            div.innerHTML = `
+                <div class='affaire'>AFFAIRE #${enquete.num}</div>
+                <h3>${enquete.titre}</h3>
+                <div class='date'>${enquete.date}</div>
+            `;
+
+            if (!enquete.locked) {
+                div.addEventListener("click", () => lancerEnquete(enquete.num));
+            }
+            main.appendChild(div);
+        });
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+// Fonction asynchrones pour lancer une enquête après le choix de l'utilisateur (effacer les scénarios pour afficher celui choisi ainsi que la grille)
+async function lancerEnquete(id) {
+    const enquete = await RecupEnqueteId(id);
+    main.innerHTML = "";
+    main.innerHTML = `
+        <h2>${enquete.titre}</h2>
+        <p>${enquete.description}</p>
+        <div id="sudoku-container">
+            ${genererGrilleHTML()}
+        </div>
+    `;
+    const [grille, solution] = await RecupSudoku();
+    initSudoku(grille, solution);
+}
+
+// Fonction pour afficher la grille de sudoku de manière dynamique
+function genererGrilleHTML() {
+    let html = "<table><tbody>";
+    for (let ligne = 0; ligne < 9; ligne++) {
+        html += "<tr>";
+        for (let col = 0; col < 9; col++) {
+            html += `
+                <td>
+                    <input type="number" min="1" max="9" id="case${ligne}-${col}">
+                </td>
+            `;
+        }
+        html += "</tr>";
+    }
+    html += "</tbody></table>";
+    return html;
+}
+
+// Fonction pour gérer les saisies dans la grille et vérifier si le joueur termine la partie
+function initSudoku(grille, solution) {
+    for (let ligne = 0; ligne < 9; ligne++) {
+        for (let col = 0; col < 9; col++) {
+
+            const input = document.getElementById(`case${ligne}-${col}`);
+            const valeur = grille[ligne][col];
+
+            if (valeur !== 0) {
+                input.value = valeur;
+                input.disabled = true;
+                input.classList.add("fixe");
+            }
+
+            input.addEventListener("input", () => {
+                verifierSudoku();
+
+                if (sudokuComplet(grille, solution)) {
+                    alert("Bravo !");
+                }
+            });
+        }
+    }
+}
+
 
 function verifierSudoku() {
     const inputs = document.querySelectorAll("input");
@@ -108,4 +206,20 @@ function verifierCarre(blocLigne, blocCol) {
             }
         }
     }
+}
+
+// Fonction pour vérifier si la grille est entièrement et correctement complétée
+function sudokuComplet(grille, solution) {
+    for (let ligne = 0; ligne < 9; ligne++) {
+        for (let col = 0; col < 9; col++) {
+
+            const input = document.getElementById(`case${ligne}-${col}`);
+            const valeur = input.value;
+
+            if (valeur !== solution[ligne][col]) {
+                return false;
+            }
+        }
+    }
+    return true;
 }

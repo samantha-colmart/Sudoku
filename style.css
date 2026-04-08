@@ -7,6 +7,112 @@
     box-sizing: border-box;
 }
 
+body {
+    margin: 0;
+    font-family: 'Georgia', serif;
+    background-color: #121212;
+    color: white;
+}
+
+header {
+    text-align: center;
+    margin-top: 60px;
+}
+
+header h1 {
+    font-size: 64px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.title-red {
+    color: #D32F2F;
+}
+
+.title-gold {
+    color: #D4AF37;
+}
+
+.subtitle {
+    color: #757575;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.subtitle::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 2px;
+    background: #D32F2F;
+    margin: 15px auto 0;
+}
+
+.levels-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 60px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.level-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.level-card.active {
+    border: 1px solid #D32F2F;
+}
+
+/* Hover */
+.level-card:hover {
+    transform: translateY(-5px);
+    border-color: #D4AF37;
+}
+
+.level-card h3 {
+    margin: 10px 0;
+    font-size: 22px;
+}
+
+.level-card .affaire {
+    color: #D4AF37;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.level-card .date {
+    color: #757575;
+    font-size: 14px;
+}
+
+.level-card.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.level-card.locked::after {
+    content: "🔒";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    opacity: 0.7;
+}
+
+.level-card.locked h3,
+.level-card.locked .date {
+    filter: blur(2px);
+}
+
 table {
     margin: 0 auto;
 }

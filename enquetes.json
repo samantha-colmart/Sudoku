@@ -1,0 +1,80 @@
+[
+  {
+    "num": 1,
+    "titre": "Mort sous les projecteurs",
+    "date": "Cannes, 2024",
+    "description": "Clara Vannier, jeune actrice prometteuse, célèbre la fin du Festival de Cannes sur un somptueux yacht. Marc Delcourt le producteur du nouveau film le plus attendu vient d’annoncer qu’après une audition très disputée, Clara a été choisie pour le rôle féminin principal. La soirée est animée, entre félicitations, ambitions cachées et rivalités. Le lendemain matin, à 7h50, Léa Morel découvre Clara morte sur le pont du yacht et appelle immédiatement la police. Entre-temps, tous les autres invités s’étaient déjà levés, conscients du drame qui venait de se produire. La fête a tourné au cauchemar, et la tranquillité de la baie de Cannes est désormais empreinte de mystère et de suspicion.",
+    "locked": false,
+
+    "indices": [
+      "Etranglement avec une corde de bateau",
+      "Corps retrouvé sur le pont avant du bateau",
+      "Heure du décès estimée entre 2h et 3h du matin",
+      "La jalousie professionnelle serait le mobile",
+      "Sophie et Thomas était ensemble jusqu’à 2h30",
+      "Julien dit avoir vu une femme sur le pont à 2h45",
+      "Clara faisait confiance à son meurtrier",
+      "Isabelle à entendu une dispute entre 2 filles dans la nuit",
+      "Répartition des chambres : Clara et Nina – Julien – Antoine et Thomas – Sophie et Camille – Marc – Léa et Isabelle"
+    ],
+
+    "suspects": [
+      {
+        "id": 1,
+        "nom": "Sophie Lemaire",
+        "description": "Actrice rivale de Clara",
+        "image": "images/dupont.jpg"
+      },
+      {
+        "id": 2,
+        "nom": "Marc Delcourt",
+        "description": "Producteur du film",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 3,
+        "nom": "Julien Roche",
+        "description": "Capitaine du yacht",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 4,
+        "nom": "Léa Morel",
+        "description": "Journaliste people",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 5,
+        "nom": "Antoine Girard",
+        "description": "Agent artistique",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 6,
+        "nom": "Camille Durand",
+        "description": "Maquilleuse de Clara",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 7,
+        "nom": "Thomas Rivières",
+        "description": "Acteur principal du film",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 8,
+        "nom": "Nina Salvi",
+        "description": "Meilleure amie de Clara et actrice",
+        "image": "images/martin.jpg"
+      },
+      {
+        "id": 9,
+        "nom": "Isabelle Fournier",
+        "description": "Scénariste du film",
+        "image": "images/martin.jpg"
+      }
+    ],
+
+    "coupableId": 8
+  }
+]

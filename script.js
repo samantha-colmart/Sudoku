@@ -114,8 +114,8 @@ function initSudoku(grille, solution) {
                 input.classList.add("fixe");
             }
 
-            input.addEventListener("input", () => {
-                verifierSudoku();
+            input.addEventListener("input", (e) => {
+                verifierSudoku(e.target);
 
                 if (sudokuComplet(grille, solution)) {
                     alert("Bravo !");
@@ -126,86 +126,69 @@ function initSudoku(grille, solution) {
 }
 
 
-function verifierSudoku() {
+function verifierSudoku(inputActif) {
     const inputs = document.querySelectorAll("input");
     inputs.forEach(input => {
         input.classList.remove("invalide")
     });
 
-    // vérif lignes
-    for (let ligne = 0; ligne < 9; ligne++) {
-        verifierLigne(ligne);
+    const coordonnees = inputActif.id.replace("case", "").split("-");
+    const ligne = parseInt(coordonnees[0]);
+    const col = parseInt(coordonnees[1]);
+    const valeur = inputActif.value;
+
+    if (valeur === "") {
+        return;
     }
 
-    // vérif colonnes
-    for (let col = 0; col < 9; col++) {
-        verifierColonne(col);
-    }
-
-    // vérifier carrés
-    for (let blocLigne = 0; blocLigne < 3; blocLigne++) {
-        for (let blocCol = 0; blocCol < 3; blocCol++) {
-            verifierCarre(blocLigne, blocCol);
-        }
+    if ((!verifierLigne(ligne, col, valeur) || !verifierColonne(col, ligne, valeur) || !verifierCarreUnique(ligne, col, valeur)) || (valeur > 9 || valeur <= 0)){
+        inputActif.classList.add("invalide");
     }
 }
 
-function verifierLigne(ligne) {
-    const dejaVus = [];
-
+function verifierLigne(ligne, colActuel, valeur) {
     for (let col = 0; col < 9; col++) {
-        const input = document.getElementById(`case${ligne}-${col}`);
-        const valeur = input.value;
-
-        if (valeur !== "") {
-            if (dejaVus.includes(valeur)) {
-                input.classList.add("invalide");
-            } else {
-                dejaVus.push(valeur);
+        if (col !== colActuel) {
+            const input = document.getElementById(`case${ligne}-${col}`);
+            if (input.value == valeur) {
+                return false;
             }
         }
     }
+    return true;
 }
 
-function verifierColonne(col) {
-    const dejaVus = [];
-
+function verifierColonne(col, ligneActuelle, valeur) {
     for (let ligne = 0; ligne < 9; ligne++) {
-        const input = document.getElementById(`case${ligne}-${col}`);
-        const valeur = input.value;
-
-        if (valeur !== "") {
-
-            if (dejaVus.includes(valeur)) {
-                input.classList.add("invalide");
-            } else {
-                dejaVus.push(valeur);
+        if (ligne !== ligneActuelle) {
+            const input = document.getElementById(`case${ligne}-${col}`);
+            if (input.value == valeur) {
+                return false;
             }
         }
     }
+    return true;
 }
 
-function verifierCarre(blocLigne, blocCol) {
-    const dejaVus = [];
+function verifierCarreUnique(ligne, col, valeur) {
+    const startLigne = Math.floor(ligne / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
 
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
 
-            const ligne = blocLigne * 3 + i;
-            const col = blocCol * 3 + j;
+            const l = startLigne + i;
+            const c = startCol + j;
 
-            const input = document.getElementById(`case${ligne}-${col}`);
-            const valeur = input.value;
-
-            if (valeur !== "") {
-                if (dejaVus.includes(valeur)) {
-                    input.classList.add("invalide");
-                } else {
-                    dejaVus.push(valeur);
+            if (l !== ligne && c !== col) {
+                const input = document.getElementById(`case${l}-${c}`);
+                if (input.value == valeur) {
+                    return false;
                 }
-            }
+            }         
         }
     }
+    return true;
 }
 
 // Fonction pour vérifier si la grille est entièrement et correctement complétée

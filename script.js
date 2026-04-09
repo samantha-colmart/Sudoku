@@ -1,5 +1,7 @@
 const main = document.getElementById("main");
 RecupEnquetes();
+let score = 0;
+let scoreEvolution = 0;
 
 // Fonction asynchrone pour récupérer les infos d'une enquête à partir de son numéro
 async function RecupEnqueteId(id) {
@@ -44,6 +46,8 @@ async function RecupEnquetes() {
         const response = await fetch(url);
         const enquetes = await response.json();
         main.innerHTML = "";
+        const grid = document.createElement("section");
+        grid.className = "grid";
         enquetes.forEach(enquete => {
             const classe = enquete.locked ? "level-card locked" : "level-card active";
             const div = document.createElement("div");
@@ -51,15 +55,17 @@ async function RecupEnquetes() {
             div.dataset.id = enquete.num;
 
             div.innerHTML = `
-                <div class='affaire'>AFFAIRE #${enquete.num}</div>
+                <img src="${enquete.image}" alt="image ${enquete.titre}">
+                <p class='affaire'>AFFAIRE #${enquete.num}</p>
                 <h3>${enquete.titre}</h3>
-                <div class='date'>${enquete.date}</div>
+                <p class='date'>${enquete.date}</p>
             `;
 
             if (!enquete.locked) {
                 div.addEventListener("click", () => lancerEnquete(enquete.num));
             }
-            main.appendChild(div);
+            grid.appendChild(div);
+            main.appendChild(grid);
         });
 
     } catch (error) {
@@ -72,14 +78,23 @@ async function lancerEnquete(id) {
     const enquete = await RecupEnqueteId(id);
     main.innerHTML = "";
     main.innerHTML = `
-        <h2>${enquete.titre}</h2>
-        <p>${enquete.description}</p>
-        <div id="sudoku-container">
-            ${genererGrilleHTML()}
-        </div>
+        <section class="enquete-container">
+            <div class="enquete-header">
+                <p class="badge-affaire">AFFAIRE #${enquete.num}</p>
+                <h2 class="enquete-titre">${enquete.titre}</h2>
+                <p class="enquete-date">${enquete.date}</p>
+            </div>
+            <div class="enquete-description">
+                <p>${enquete.description}</p>
+            </div>
+            <div id="sudoku-container">
+                ${genererGrilleHTML()}
+            </div>
+        </section>
     `;
     const [grille, solution] = await RecupSudoku();
-    initSudoku(grille, solution);
+    console.log(solution);
+    initSudoku(grille, solution, enquete);
 }
 
 // Fonction pour afficher la grille de sudoku de manière dynamique
@@ -101,7 +116,7 @@ function genererGrilleHTML() {
 }
 
 // Fonction pour gérer les saisies dans la grille et vérifier si le joueur termine la partie
-function initSudoku(grille, solution) {
+function initSudoku(grille, solution, enquete) {
     for (let ligne = 0; ligne < 9; ligne++) {
         for (let col = 0; col < 9; col++) {
 
@@ -115,10 +130,19 @@ function initSudoku(grille, solution) {
             }
 
             input.addEventListener("input", (e) => {
+                grille[ligne][col] = parseInt(input.value);
                 verifierSudoku(e.target);
 
+                const carres = verifierCarreComplet(grille, solution);
+                score = carres.length;
+
+                if (score > scoreEvolution) {
+                    showNotification(`Indice n°${score} collecté`);
+                    scoreEvolution = score;
+                }
+
                 if (sudokuComplet(grille, solution)) {
-                    alert("Bravo !");
+                    afficherFinEnquete(enquete);
                 }
             });
         }
@@ -191,18 +215,139 @@ function verifierCarreUnique(ligne, col, valeur) {
     return true;
 }
 
+function verifierCarreComplet(grille, solution) {
+    let carresCompletes = [];
+    for (let i = 0; i < 9; i += 3) {
+        for (let j = 0; j < 9; j += 3) {
+            if (verifierCarreUniqueComplet(i, j, grille, solution)) {
+                carresCompletes.push([i, j]);
+            }
+        }
+    }
+    return carresCompletes;
+}
+
+function verifierCarreUniqueComplet(startLigne, startCol, grille, solution){
+    for(let i = 0; i < 3; i++){
+        for(let j = 0; j < 3; j++){
+            let l = startLigne + i;
+            let c = startCol + j;
+            if(grille[l][c] !== solution[l][c]){
+                return false;
+            }
+        }
+    }
+    colorerCarre(startLigne, startCol);
+    return true;
+}
+
+function colorerCarre(startLigne, startCol){
+    for(let i = 0; i < 3; i++){
+        for(let j = 0; j < 3; j++){
+            let input = document.getElementById(`case${startLigne+i}-${startCol+j}`);
+            if (!input.classList.contains("valide")) {
+                input.classList.add("valide");
+                input.disabled = true;
+            }
+        }
+    }
+}
+
 // Fonction pour vérifier si la grille est entièrement et correctement complétée
 function sudokuComplet(grille, solution) {
     for (let ligne = 0; ligne < 9; ligne++) {
         for (let col = 0; col < 9; col++) {
-
-            const input = document.getElementById(`case${ligne}-${col}`);
-            const valeur = input.value;
-
-            if (valeur !== solution[ligne][col]) {
+            if (grille[ligne][col] !== solution[ligne][col]) {
                 return false;
             }
         }
     }
     return true;
+}
+
+function showNotification(message) {
+    const notif = document.getElementById('notification');
+    notif.textContent = message;
+    notif.classList.remove('hidden');
+
+    setTimeout(() => {
+        notif.classList.add('hidden');
+    }, 2000);
+}
+
+function afficherFinEnquete(enquete) {
+    main.innerHTML = "";
+
+    let html = `
+        <section class="enquete-container">
+            <div class="enquete-header">
+                <p class="badge-affaire">AFFAIRE #${enquete.num}</p>
+                <h2 class="enquete-titre">${enquete.titre}</h2>
+                <p class="enquete-date">${enquete.date}</p>
+            </div>
+            <div class="enquete-description">
+                <p>${enquete.description}</p>
+            </div>
+            <section class="form-suspects">
+                <div class="indices">
+                    <h3>Indices récoltés :</h3>
+                    <ul>
+    `;
+    for (let i = 0; i < enquete.indices.length; i++) {
+        html += `<li>${enquete.indices[i]}</li>`;
+    }
+    html += `
+                </ul>
+            </div>
+            <form class="suspects-list">
+    `;
+    for (let i = 0; i < enquete.suspects.length; i++) {
+        const suspect = enquete.suspects[i];
+        html += `
+            <div class="choix_suspect" data-id="${suspect.id}">
+                <input type="radio" name="suspect" value="${suspect.id}" id="suspect-${suspect.id}" />
+                <label for="suspect-${suspect.id}">
+                    <div class="suspect_content">
+                        <img src="${suspect.image}" alt="${suspect.nom}">
+                        <p class="nom">${suspect.nom}</p>
+                        <p class="description">${suspect.description}</p>
+                    </div>
+                </label>
+                <button type="button" class="eliminer">Éliminer</button>
+            </div>
+        `;
+    }
+    html += `
+                <button type="button" class="terminer-enquete">Terminer l'enquête</button>
+            </form>
+        </section>
+    </section>
+    `;
+
+    main.innerHTML = html;
+
+    const boutonsEliminer = main.querySelectorAll(".eliminer");
+    boutonsEliminer.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const parent = e.target.parentNode;
+            parent.classList.add("elimine");
+            const input = parent.querySelector("input[type='radio']");
+            input.disabled = true;
+        });
+    });
+
+    const submitBtn = main.querySelector(".terminer-enquete");
+    submitBtn.addEventListener("click", () => {
+        const selection = main.querySelector("input[type='radio']:checked");
+        if (!selection) {
+            alert("Veuillez sélectionner un suspect !");
+            return;
+        }
+        const coupableId = parseInt(selection.value);
+        if (coupableId === enquete.coupableId) {
+            alert("Félicitations ! Vous avez trouvé le coupable !");
+        } else {
+            alert("Ce n'est pas le bon suspect. Essayez encore.");
+        }
+    });
 }

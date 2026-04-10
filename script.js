@@ -2,6 +2,12 @@ const main = document.getElementById("main");
 RecupEnquetes();
 let score = 0;
 let scoreEvolution = 0;
+let secondes = 0;
+let chrono = null;
+
+const musique = new Audio("audios/musique_fond.mp3");
+musique.loop = true;
+musique.volume = 0.2;
 
 // Fonction asynchrone pour récupérer les infos d'une enquête à partir de son numéro
 async function RecupEnqueteId(id) {
@@ -75,7 +81,9 @@ async function RecupEnquetes() {
 
 // Fonction asynchrones pour lancer une enquête après le choix de l'utilisateur (effacer les scénarios pour afficher celui choisi ainsi que la grille)
 async function lancerEnquete(id) {
+    musique.play();
     const enquete = await RecupEnqueteId(id);
+    chrono = window.setInterval(incrementerChrono, 1000);
     main.innerHTML = "";
     main.innerHTML = `
         <section class="enquete-container">
@@ -83,6 +91,9 @@ async function lancerEnquete(id) {
                 <p class="badge-affaire">AFFAIRE #${enquete.num}</p>
                 <h2 class="enquete-titre">${enquete.titre}</h2>
                 <p class="enquete-date">${enquete.date}</p>
+                <div class="chrono-container">
+                    Temps : <span id="chrono">0:00</span>
+                </div>
             </div>
             <div class="enquete-description">
                 <p>${enquete.description}</p>
@@ -142,6 +153,8 @@ function initSudoku(grille, solution, enquete) {
                 }
 
                 if (sudokuComplet(grille, solution)) {
+                    window.clearInterval(chrono);
+                    chrono = null;
                     afficherFinEnquete(enquete);
                 }
             });
@@ -288,13 +301,21 @@ function afficherFinEnquete(enquete) {
             <div class="enquete-description">
                 <p>${enquete.description}</p>
             </div>
+            <div class="enquete-consignes">
+                <p>À partir des indices que vous venez de récolter, analysez les informations à votre disposition pour identifier le coupable. Sélectionnez le suspect que vous jugez responsable, puis terminez l’enquête afin de vérifier si votre déduction est correcte.</p>
+            </div>
             <section class="form-suspects">
                 <div class="indices">
                     <h3>Indices récoltés :</h3>
                     <ul>
     `;
-    for (let i = 0; i < enquete.indices.length; i++) {
+    for (let i = 0; i < enquete.indices.length-1; i++) {
         html += `<li>${enquete.indices[i]}</li>`;
+    }
+    if(secondes < 300){
+        html += `<li>${enquete.indices[9]}</li>`;
+    } else{
+        html += `<li>Vous avez raté un indice...</li>`;
     }
     html += `
                 </ul>
@@ -348,4 +369,17 @@ function afficherFinEnquete(enquete) {
             alert("Ce n'est pas le bon suspect. Essayez encore.");
         }
     });
+}
+
+function incrementerChrono() {
+    secondes++;
+    const minutes = Math.floor(secondes / 60);
+    const secs = secondes % 60;
+    let affichage = minutes + ":";
+    if (secs < 10) {
+        affichage += "0" + secs;
+    } else {
+        affichage += secs;
+    }
+    document.getElementById("chrono").textContent = affichage;
 }

@@ -312,7 +312,7 @@ function afficherFinEnquete(enquete) {
     for (let i = 0; i < enquete.indices.length-1; i++) {
         html += `<li>${enquete.indices[i]}</li>`;
     }
-    if(secondes < 300){
+    if(secondes < 1200){
         html += `<li>${enquete.indices[9]}</li>`;
     } else{
         html += `<li>Vous avez raté un indice...</li>`;
@@ -364,9 +364,9 @@ function afficherFinEnquete(enquete) {
         }
         const coupableId = parseInt(selection.value);
         if (coupableId === enquete.coupableId) {
-            alert("Félicitations ! Vous avez trouvé le coupable !");
+            afficherResultat(enquete, true);
         } else {
-            alert("Ce n'est pas le bon suspect. Essayez encore.");
+            afficherResultat(enquete, false);
         }
     });
 }
@@ -382,4 +382,50 @@ function incrementerChrono() {
         affichage += secs;
     }
     document.getElementById("chrono").textContent = affichage;
+}
+
+function afficherResultat(enquete, estCoupable) {
+    const modal = document.createElement("div");
+    modal.className = "modal-resultat";
+
+    if (estCoupable) {
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>Bravo !</h2>
+                <p>Vous avez trouvé le coupable.</p>
+                <div class="images-resultat">
+                    <img src="${enquete.victime}" alt="victime">
+                    <img src="${enquete.suspects[enquete.coupableId-1].image}" alt="coupable">
+                </div>
+                <p class="explication">${enquete.explication}</p>
+                <button class="fermer">Fermer</button>
+            </div>
+        `;
+        modal.querySelector(".fermer").addEventListener("click", () => {
+            sauvegarderEnqueteTerminee(enquete.num);
+            window.location.reload();
+        })
+    } else {
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>Mauvaise réponse</h2>
+                <p>Ce n’est pas le bon coupable…</p>
+                <p>Retentez une prochaine fois !</p>
+                <button class="rejouer">Recommencer</button>
+            </div>
+        `;
+        modal.querySelector(".rejouer").addEventListener("click", () => {
+            window.location.reload();
+        });
+    }
+
+    document.body.appendChild(modal);
+}
+
+function sauvegarderEnqueteTerminee(enqueteId) {
+    let terminees = JSON.parse(localStorage.getItem("enquetesTerminees")) || [];
+    if (!terminees.includes(enqueteId)) {
+        terminees.push(enqueteId);
+    }
+    localStorage.setItem("enquetesTerminees", JSON.stringify(terminees));
 }

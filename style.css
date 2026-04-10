@@ -538,3 +538,42 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #fff;
     font-family: monospace;
 }
+
+.modal-resultat {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+    color: #fff;
+}
+
+.images-resultat {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.images-resultat img {
+    width: 45%;
+    border-radius: 8px;
+}
+
+.modal-content button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #D4AF37;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

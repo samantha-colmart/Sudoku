@@ -24,55 +24,55 @@
         "id": 1,
         "nom": "Sophie Lemaire",
         "description": "Actrice rivale de Clara",
-        "image": "images/dupont.jpg"
+        "image": "images/lemaire.png"
       },
       {
         "id": 2,
         "nom": "Marc Delcourt",
         "description": "Producteur du film",
-        "image": "images/martin.jpg"
+        "image": "images/delcourt.png"
       },
       {
         "id": 3,
         "nom": "Julien Roche",
         "description": "Capitaine du yacht",
-        "image": "images/martin.jpg"
+        "image": "images/roche.png"
       },
       {
         "id": 4,
         "nom": "Léa Morel",
         "description": "Journaliste people",
-        "image": "images/martin.jpg"
+        "image": "images/morel.png"
       },
       {
         "id": 5,
         "nom": "Antoine Girard",
         "description": "Agent artistique",
-        "image": "images/martin.jpg"
+        "image": "images/girard.png"
       },
       {
         "id": 6,
         "nom": "Camille Durand",
         "description": "Maquilleuse de Clara",
-        "image": "images/martin.jpg"
+        "image": "images/durand.png"
       },
       {
         "id": 7,
         "nom": "Thomas Rivières",
         "description": "Acteur principal du film",
-        "image": "images/martin.jpg"
+        "image": "images/rivieres.png"
       },
       {
         "id": 8,
         "nom": "Nina Salvi",
         "description": "Meilleure amie de Clara et actrice",
-        "image": "images/martin.jpg"
+        "image": "images/salvi.png"
       },
       {
         "id": 9,
         "nom": "Isabelle Fournier",
         "description": "Scénariste du film",
-        "image": "images/martin.jpg"
+        "image": "images/fournier.png"
       }
     ],
 

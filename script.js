@@ -309,8 +309,6 @@ function afficherFinEnquete(enquete) {
                 <label for="suspect-${suspect.id}">
                     <div class="suspect_content">
                         <img src="${suspect.image}" alt="${suspect.nom}">
-                        <p class="nom">${suspect.nom}</p>
-                        <p class="description">${suspect.description}</p>
                     </div>
                 </label>
                 <button type="button" class="eliminer">Éliminer</button>
@@ -318,8 +316,8 @@ function afficherFinEnquete(enquete) {
         `;
     }
     html += `
-                <button type="button" class="terminer-enquete">Terminer l'enquête</button>
             </form>
+            <button type="button" class="terminer-enquete">Terminer l'enquête</button>
         </section>
     </section>
     `;

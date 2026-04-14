@@ -53,15 +53,15 @@ main {
 }
 
 .grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 35px;
-    justify-content: center;
     margin-top: 40px;
 }
 
 .level-card {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     background: linear-gradient(145deg, #1a1a1a, #111);
     border: 1px solid #2a2a2a;
     border-radius: 12px;
@@ -70,8 +70,7 @@ main {
     transition: 0.3s;
     position: relative;
     overflow: hidden;
-    margin: 0 auto;
-    max-width: 320px;
+    height: 100%;
 }
 
 .level-card img {
